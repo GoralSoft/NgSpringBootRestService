@@ -1,0 +1,86 @@
+<app-headermenu></app-headermenu>
+<p-confirmDialog header="Confirm Paper Delete" icon="fa fa-question-circle" width="425" #cd>
+        <p-footer>
+            <button type="button" pButton icon="fa-close" label="No" (click)="cd.reject()"></button>
+            <button type="button" pButton icon="fa-check" label="Yes" (click)="cd.accept()"></button>
+        </p-footer>
+</p-confirmDialog>
+
+<div class="ui-widget-header" style="padding:4px 10px;border-bottom: 0 none">
+  <i class="fa fa-search" style="margin:4px 4px 0 0"></i>
+  <input #gb type="text" pInputText size="50" placeholder="Global Filter">
+</div>
+<div class="content-section implementation">
+  <p-dataTable [value]="formPapers" [rows]="10" [paginator]="true" [pageLinks]="3" [rowsPerPageOptions]="[5,10,20]" 
+  resizableColumns="true" columnResizeMode="fit" [responsive]="true" sortMode="multiple" [globalFilter]="gb" #dt>
+      <p-header>List of Papers</p-header>
+      <p-column field="papercode" header="Paper Code" [sortable]="true"></p-column>
+      <p-column field="papername" header="Paper Name" [sortable]="true"></p-column>
+      <p-column styleClass="col-button">
+            <ng-template pTemplate="header">
+                <!--<button type="button" pButton icon="fa-refresh"></button>--><span>Edit/Delete</span>
+            </ng-template>
+            <ng-template let-paper="rowData" pTemplate="body">
+                <button type="button" pButton (click)="showDialogToEdit(paper)"  icon="fa-edit"></button>
+                <button type="button" pButton (click)="confirm(paper)"  icon="fa-remove"></button>
+            </ng-template>            
+        </p-column>
+      <p-footer>
+          <div class="ui-helper-clearfix" style="width:100%">
+              <button type="button" pButton icon="fa-plus" style="float:left" (click)="showDialogToAdd(paper)" label="Add"></button>
+            </div>
+    </p-footer>
+  </p-dataTable>
+</div>
+
+<p-growl [value]="msgs" life="5000"></p-growl>
+
+
+<p-dialog header="Paper Details" [(visible)]="displayDialog" [responsive]="true" showEffect="fade" [modal]="true">
+  <form [formGroup]="pform" >
+      <div class="ui-grid ui-grid-responsive ui-fluid" *ngIf="paper">
+          <div class="ui-grid-row"> 
+              <div class="ui-grid-col-4"><label for="papercode">Paper Code*</label></div>
+              <div class="ui-grid-col-8"><input pInputText id="papercode" [(ngModel)]="paper.papercode" formControlName="papercode"/></div>  
+              <div class="ui-grid-col-4">
+                    <div class="ui-message ui-messages-error ui-corner-all" *ngIf="!pform.controls['papercode'].valid&&pform.controls['papercode'].dirty">
+                        <i class="fa fa-close"></i>
+                        Paper Code is required
+                    </div>
+                </div>            
+          </div>
+          
+          <div class="ui-grid-row">          
+              <div class="ui-grid-col-4"><label for="papername">Paper Name</label></div>
+              <div class="ui-grid-col-8"><input pInputText id="papername" [(ngModel)]="paper.papername" formControlName="papername"/></div>
+              <div class="ui-grid-col-4">
+                  <!--<div class="ui-message ui-messages-error ui-corner-all" *ngIf="!pform.controls['papername'].valid&&pform.controls['papername'].dirty">
+                      <i class="fa fa-close"></i>
+                      Paper Name is required
+                  </div>-->
+              </div>
+          </div>
+          
+      </div>
+      <p-footer>
+          <div class="ui-dialog-buttonpane ui-helper-clearfix">
+                <!--<div class="ui-grid-row">
+                        <div class="ui-grid-col-4"></div>
+                        <div class="ui-grid-col-8">
+                            <button pButton type="submit" label="Submit" [disabled]="!pform.valid"></button>
+                        </div>
+                        <div class="ui-grid-col-4"></div>
+                    </div>
+                    <div style="text-align:center;margin-top:20px" *ngIf="submitted">
+                        Form Submitted
+                        <br>
+                        {{diagnostic}}
+                    </div>-->      
+              <!--<button type="button" pButton icon="fa-close" (click)="delete(paper)" label="Delete" [disabled]="!pform.valid"></button>-->
+              <button type="button" pButton icon="fa-check" (click)="savePaper(paper)" label="Add Paper" [disabled]="!pform.valid"></button>
+              <button type="button" pButton icon="fa-check" (click)="updatePaper(paper)" label="Update Paper" [disabled]="!pform.valid"></button>
+          </div>
+      </p-footer>
+   
+  </form>
+</p-dialog>

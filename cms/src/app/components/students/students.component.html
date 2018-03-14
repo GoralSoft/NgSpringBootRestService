@@ -1,0 +1,106 @@
+<app-headermenu></app-headermenu>
+<p-confirmDialog header="Confirm Student Delete" icon="fa fa-question-circle" width="425" #cd>
+        <p-footer>
+            <button type="button" pButton icon="fa-close" label="No" (click)="cd.reject()"></button>
+            <button type="button" pButton icon="fa-check" label="Yes" (click)="cd.accept()"></button>
+        </p-footer>
+</p-confirmDialog>
+
+<div class="ui-widget-header" style="padding:4px 10px;border-bottom: 0 none">
+    <i class="fa fa-search" style="margin:4px 4px 0 0"></i>
+    <input #gb type="text" pInputText size="50" placeholder="Global Filter">
+</div>
+<div class="content-section implementation">
+    <p-dataTable [value]="students" [rows]="10" [paginator]="true" [pageLinks]="3" [rowsPerPageOptions]="[5,10,20]"  
+    resizableColumns="true" columnResizeMode="fit" [responsive]="true" sortMode="multiple" [globalFilter]="gb" #dt>
+        <p-header>List of Students</p-header>
+        <p-column field="regno" header="RegNo" [sortable]="true"></p-column>
+        <p-column field="nameineng" header="Name" [sortable]="true" ></p-column>
+        <p-column field="course" header="Course" [sortable]="true" ></p-column>
+        <p-column field="deptid" header="Department" [sortable]="true" ></p-column>
+        <p-column field="batch" header="Batch" [sortable]="true" ></p-column>
+        <p-column field="dob" header="DOB (MM-dd-yyyy)" [sortable]="true" >
+                <ng-template let-col let-student="rowData" pTemplate="body">
+                        <span>{{student[col.field] | date: 'MM-dd-yyyy'}}</span>
+                     </ng-template>
+        </p-column>
+        <p-column styleClass="col-button">
+                <ng-template pTemplate="header">
+                    <!--<button type="button" pButton icon="fa-refresh"></button>--><span>Edit/Delete</span>
+                </ng-template>
+                <ng-template let-student="rowData" pTemplate="body">
+                    <button type="button" pButton (click)="showDialogToEdit(student)"   icon="fa-edit"></button>
+                    <button type="button" pButton (click)="confirm(student)"   icon="fa-remove"></button>
+                </ng-template>            
+            </p-column>            
+        <ng-template pTemplate="paginatorLeft">
+            <button type="button" pButton icon="fa-plus" (click)="showDialogToAdd(student)" label="Add New Student"></button>
+        </ng-template>
+        <ng-template pTemplate="paginatorRight">
+            <button type="button" pButton icon="fa-cloud-upload"></button>
+        </ng-template>
+    </p-dataTable>
+</div>
+
+<p-growl [value]="msgs" life="5000"></p-growl>
+
+<p-dialog  header="Student Details" [(visible)]="displayDialog" [responsive]="true" showEffect="fade" [modal]="true">
+  <form [formGroup]="studentform">
+      <div class="ui-grid ui-grid-responsive ui-fluid" *ngIf="student">
+          <div class="ui-grid-row"> 
+              <div class="ui-grid-col-6"><label for="regno">RegNo*</label></div>
+              <div class="ui-grid-col-8"><input pInputText id="regno" [(ngModel)]="student.regno" formControlName="regno"/></div>  
+              <div class="ui-grid-col-4">
+                    <div class="ui-message ui-messages-error ui-corner-all" *ngIf="!studentform.controls['regno'].valid&&studentform.controls['regno'].dirty">
+                        <i class="fa fa-close"></i>
+                        RegNo is required
+                    </div>
+                </div>            
+          </div>          
+          <div class="ui-grid-row">          
+              <div class="ui-grid-col-6"><label for="name">Student Name</label></div>
+              <div class="ui-grid-col-8"><input pInputText id="name" [(ngModel)]="student.nameineng" formControlName="name"/></div>
+              <div class="ui-grid-col-4">                  
+              </div>
+          </div>  
+          <div class="ui-grid-row">          
+                <div class="ui-grid-col-6"><label for="dob">DOB*</label></div>
+                <div class="ui-grid-col-8">
+                    <p-calendar id="dob" [(ngModel)]="student.dob" dateFormat="mm-dd-yy" [monthNavigator]="true" [yearNavigator]="true" yearRange="1950:2000" formControlName="dob"></p-calendar>
+                </div>
+                <div class="ui-grid-col-4">
+                        <div class="ui-message ui-messages-error ui-corner-all" *ngIf="!studentform.controls['dob'].valid&&studentform.controls['dob'].dirty">
+                                <i class="fa fa-close"></i>
+                                DOB is required
+                            </div>                  
+                </div>
+            </div>  
+            <div class="ui-grid-row">          
+                <div class="ui-grid-col-6"><label for="course">Course</label></div>
+                <div class="ui-grid-col-8"><input pInputText id="course" [(ngModel)]="student.course" formControlName="course"/></div>
+                <div class="ui-grid-col-4">                  
+                </div>
+            </div>  
+            <div class="ui-grid-row">          
+                <div class="ui-grid-col-6"><label for="deptid">Department</label></div>
+                <div class="ui-grid-col-8"><input pInputText id="deptid" [(ngModel)]="student.deptid" formControlName="deptid"/></div>
+                <div class="ui-grid-col-4">                  
+                </div>
+            </div> 
+            <div class="ui-grid-row">          
+                    <div class="ui-grid-col-6"><label for="batch">Batch</label></div>
+                    <div class="ui-grid-col-8">
+                        <p-spinner size="30" [min]="1" [max]="10" id="batch" [(ngModel)]="student.batch" formControlName="batch"></p-spinner>
+                    </div>
+                    <div class="ui-grid-col-4">                  
+                    </div>
+                </div>         
+      </div>
+      <p-footer>
+          <div class="ui-dialog-buttonpane ui-helper-clearfix">                
+              <button type="button" pButton icon="fa-check" (click)="saveStudent(student)" label="Save" [disabled]="!studentform.valid"></button>
+              <button type="button" pButton icon="fa-check" (click)="updateStudent(student)" label="Update" [disabled]="!studentform.valid"></button>
+          </div>
+      </p-footer>   
+  </form>
+</p-dialog>
